@@ -16,15 +16,15 @@ test = pd.read_csv("test.csv")
 train_X = train.iloc[:, [2, 4, 5, 9]].values
 train_y = train.iloc[:, 1].values
 test_X = test.iloc[:, [1, 3, 4, 8]].values
-test_y = test.iloc[:, 1].values
 
     # Replacing null values ​​(NaN) with the average of each DataSet X
 
 imputer = SimpleImputer(missing_values = np.nan, strategy = "mean")
 imputer = imputer.fit(train_X[:, 2:3])
 train_X[:, 2:3] = imputer.transform(train_X[:, 2:3])
-imputer = imputer.fit(test_X[:, 2:3])
-test_X[:, 2:3] = imputer.transform(test_X[:, 2:3])
+imputer = imputer.fit(test_X[:, [2,3]])
+test_X[:, [2,3]] = imputer.transform(test_X[:, [2,3]])
+
 
     # Encoding the "Sex" Field
 
@@ -41,3 +41,12 @@ test_X = onehotencoder.fit_transform(test_X)
 sc_X = preprocessing.StandardScaler()
 train_X = sc_X.fit_transform(train_X)
 test_X = sc_X.fit_transform(test_X)
+
+    # Ajustar modelo SVM en el Conjunto de Entrenamiento
+
+classifier = SVC(kernel = "poly", random_state = 0)
+classifier.fit(train_X, train_y)
+
+    # Results predicction with the training DataSet
+
+pred_y = classifier.predict(test_X)
